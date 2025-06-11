@@ -14,5 +14,5 @@ resource "aws_instance" "devserver" {
   ami               = "ami-0f670ce69a22c07a9"
   instance_type     = "t3.micro"
   key_name          = "keypair2"
-  availability_zone = "eu-north-1"
+  availability_zone = "eu-north-1b"
 }
