@@ -1,0 +1,41 @@
+provider "aws" {
+  alias      = "ap-south"
+  region     = "ap-south-1"
+  access_key = "AKIATQZCSIMH4ALT2JMI"
+  secret_key = "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"
+}
+
+provider "aws" {
+  alias      = "us-east1"
+  region     = "us-east-1"
+  access_key = "AKIATQZCSIMH4ALT2JMI"
+  secret_key = "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"
+}
+
+resource "aws_instance" "south_devserver" {
+  provider = aws.ap-south
+  tags = {
+    Name        = "mumbaiserver"
+    Environment = "Dev"
+    Project     = "FLM"
+  }
+
+  ami               = "ami-0120bca902526ae75"
+  instance_type     = "t3.micro"
+  key_name          = "keypair"
+  availability_zone = "ap-south-1b"
+}
+
+resource "aws_instance" "NVeastserver" {
+  provider = aws.us-east1
+  tags = {
+    Name        = "NVserver"
+    Environment = "Test"
+    Project     = "FLM"
+  }
+
+  ami               = "ami-0dc3a08bd93f84a35"
+  instance_type     = "t3.micro"
+  key_name          = "keypair"
+  availability_zone = "us-east-1b"
+}
