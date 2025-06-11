@@ -1,0 +1,18 @@
+provider "aws" {
+  region     = "eu-north-1"
+  access_key = "KEY"
+  secret_key = "KEY"
+}
+
+resource "aws_instance" "devserver" {
+  tags = {
+    Name        = "Terraformserver"
+    Environment = "Dev"
+    Project     = "FLM"
+  }
+
+  ami               = "ami-0f670ce69a22c07a9"
+  instance_type     = "t3.micro"
+  key_name          = "keypair2"
+  availability_zone = "eu-north-1"
+}
