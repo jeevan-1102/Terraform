@@ -1,0 +1,37 @@
+provider "aws" {
+  region = "eu-north-1"
+}
+
+resource "aws_instance" "myinstance" {
+  tags = {
+    Name        = var.iname
+    Environment = "Dev"
+  }
+
+  ami           = "ami-0f670ce69a22c07a9"
+  instance_type = var.itype ? "t3.micro" : "t3.medium"
+  key_name      = var.kname
+  root_block_device {
+    volume_size = var.size
+  }
+}
+
+variable "iname" {
+  type    = string
+  default = "Jk1"
+}
+
+variable "kname" {
+  type    = string
+  default = "keypair2"
+}
+
+variable "size" {
+  type    = number
+  default = 20
+}
+
+variable "itype" {
+  type    = bool
+  default = false
+}
