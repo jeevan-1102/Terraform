@@ -1,0 +1,39 @@
+provider "aws" {
+  region = "eu-north-1"
+}
+
+resource "aws_instance" "myinstance" {
+  tags = {
+    Name        = var.iname[count.index]
+    Environment = "Dev"
+  }
+
+  ami                    = "ami-0f670ce69a22c07a9"
+  instance_type          = var.itype ? "t3.micro" : "t3.medium"
+  key_name               = var.kname
+  vpc_security_group_ids = [aws_security_group.mysg.id]
+  root_block_device {
+    volume_size = var.size
+  }
+  count = 3
+}
+
+variable "iname" {
+  type    = list(string)
+  default = ["flm", "docker", "k8s"]
+}
+
+variable "kname" {
+  type    = string
+  default = "keypair2"
+}
+
+variable "size" {
+  type    = number
+  default = 20
+}
+
+variable "itype" {
+  type    = bool
+  default = false
+}
