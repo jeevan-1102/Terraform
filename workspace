@@ -1,0 +1,25 @@
+terraform workspace list   --- to check list of workspaces
+terraform workspace new dev  --- creating new dev workspace
+terraform workspace select test -- to go for particular workspace
+
+
+
+==============code===================
+  provider "aws" {
+  region = "eu-north-1"
+}
+
+locals {
+  instance_types = {
+    dev  = "t3.micro"
+    test = "t3.medium"
+  }
+}
+
+resource "aws_instance" "server" {
+  tags = {
+    Name = "${terraform.workspace}-manual"
+  }
+  ami           = "ami-0fdbea22f3180a1ca"
+  instance_type = local.instance_types[terraform.workspace]
+}
