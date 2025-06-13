@@ -1,0 +1,37 @@
+provider "aws" {
+  region = "eu-north-1"
+}
+
+resource "aws_security_group" "mysg" {
+  name        = var.sname[count.index]
+  description = "this is for dynamic loop"
+
+  dynamic "ingress" {
+    for_each = var.ports
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+count = 3
+}
+
+
+variable "ports" {
+  type    = list(any)
+  default = [22, 80, 8081, 8080]
+}
+
+variable "sname" {
+type = list(string)
+default = ["tfg","abc","sdb"]
+}
