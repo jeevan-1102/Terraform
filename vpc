@@ -1,0 +1,128 @@
+provider "aws" {
+    region = "eu-north-1"
+}
+
+resource "aws_vpc" "lvpc"{
+    tags = {
+        Name = "myvpc"
+    }
+    cidr_block = "10.0.0.0/18"
+    enable_dns_hostnames = true
+}
+
+resource "aws_subnet" "lsubnet" {
+    vpc_id = aws_vpc.lvpc.id
+    tags = {
+        Name = "subnet1"
+    }
+    availability_zone = "eu-north-1a"
+    cidr_block = "10.0.0.0/20"
+    map_public_ip_on_launch = true
+}
+
+resource "aws_subnet" "lpsubnet" {
+    vpc_id = aws_vpc.lvpc.id
+    tags = {
+        Name = "psubnet1"
+    }
+    availability_zone = "eu-north-1b"
+    cidr_block = "10.0.16.0/20"
+}
+
+resource "aws_internet_gateway" "ligw" {
+    tags = {
+        Name = "myigw"
+    }
+    vpc_id = aws_vpc.lvpc.id
+
+}
+
+resource "aws_route_table" "lrt" {
+    tags = {
+        Name = "prt"
+    }
+    vpc_id = aws_vpc.lvpc.id
+    route {
+        cidr_block = "0.0.0.0/0"
+        gateway_id = aws_internet_gateway.ligw.id
+
+    }
+
+}
+
+resource "aws_eip" "leip" {
+    domain = "vpc"
+
+}
+
+resource "aws_nat_gateway" "lnat" {
+    tags = {
+        Name = "mynat"
+    }
+    subnet_id = aws_subnet.lsubnet.id
+    allocation_id = aws_eip.leip.id
+
+}
+
+resource "aws_route_table" "lprt" {
+    tags = {
+        Name = "prrt"
+    }
+    vpc_id = aws_vpc.lvpc.id
+    route {
+        cidr_block = "0.0.0.0/0"
+        nat_gateway_id = aws_nat_gateway.lnat.id
+    }
+
+}
+
+resource "aws_route_table_association" "pass" {
+   subnet_id = aws_subnet.lpsubnet.id
+   route_table_id = aws_route_table.lrt.id
+}
+
+
+resource "aws_route_table_association" "prass" {
+   subnet_id = aws_subnet.lpsubnet.id
+   route_table_id = aws_route_table.lprt.id
+}
+
+resource "aws_security_group" "mysg" {
+  name        = "terraformsecurity"
+  description = "created for terraform vpc"
+  vpc_id = aws_vpc.lvpc.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "mypsg" {
+  name        = "terraformsecurityp"
+  description = "created for terraform pvpc"
+  vpc_id = aws_vpc.lvpc.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
