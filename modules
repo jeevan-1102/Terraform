@@ -1,0 +1,15 @@
+module "instance_module" {
+source = "./modules/instance"
+itype = "t3.micro"
+ami_id = "ami-0b4fbd58a32e7ef15"
+}
+
+module "bucket_module" {
+source = "./modules/bucket"
+bucket_name = "mybucketassd81h11h.tf"
+}
+
+module "vpc_module" {
+source = "./modules/vpc"
+vpc_name = "modulevpc"
+}
